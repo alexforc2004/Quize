@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quiz POO - Glow Edition</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0d0f17;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    color: #eee;
+  }
+  #quiz-container {
+    background: #12141e;
+    padding: 30px 40px;
+    border-radius: 15px;
+    width: 450px;
+    box-shadow:
+      0 0 10px #00e6ff,
+      0 0 20px #00e6ff,
+      0 0 30px #00e6ff,
+      0 0 40px #00e6ff;
+    user-select: none;
+  }
+  #question {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-shadow: 0 0 8px #00e6ff;
+  }
+  .choice {
+    background: #1e2230;
+    margin: 12px 0;
+    padding: 15px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 
+      background 0.3s ease,
+      box-shadow 0.3s ease,
+      transform 0.25s ease;
+    box-shadow:
+      inset 0 0 5px #00b8d4;
+    color: #a0d8f7;
+    font-weight: 500;
+  }
+  .choice:hover {
+    background: #00b8d4;
+    color: #0d0f17;
+    box-shadow:
+      0 0 12px #00e6ff,
+      0 0 25px #00e6ff,
+      0 0 40px #00e6ff;
+    transform: scale(1.05);
+  }
+  .choice.correct {
+    background-color: #27ae60 !important;
+    box-shadow:
+      0 0 20px #27ae60,
+      0 0 40px #27ae60;
+    color: #e0f8e0 !important;
+    font-weight: 700;
+  }
+  .choice.wrong {
+    background-color: #e74c3c !important;
+    box-shadow:
+      0 0 20px #e74c3c,
+      0 0 40px #e74c3c;
+    color: #f8d7d7 !important;
+    font-weight: 700;
+  }
+  #timer {
+    margin-top: 25px;
+    font-weight: 700;
+    font-size: 20px;
+    color: #00e6ff;
+    text-align: center;
+    text-shadow: 0 0 8px #00e6ff;
+  }
+  #result {
+    font-size: 28px;
+    font-weight: 700;
+    margin-top: 30px;
+    color: #00e6ff;
+    text-shadow: 0 0 15px #00e6ff;
+  }
+</style>
+</head>
+<body>
+
+<div id="quiz-container">
+  <div id="question">Question ici</div>
+  <div id="choices"></div>
+  <div id="timer">Temps restant: 10s</div>
+</div>
+<div id="result"></div>
+
+<script>
+const quizData = [
+  // (same questions as you provided, omitted here for brevity)
+  {
+    question: "Qu'est-ce qu'une interface en POO ?",
+    choices: [
+      "Une classe pouvant être instanciée",
+      "Un contrat qui impose des méthodes à implémenter",
+      "Une méthode statique",
+      "Une propriété privée"
+    ],
+    correct: 1
+  },
+  {
+    question: "Qu'est-ce qu'une méthode statique ?",
+    choices: [
+      "Une méthode qui appartient à l'objet",
+      "Une méthode accessible uniquement dans la classe",
+      "Une méthode qui appartient à la classe elle-même",
+      "Une méthode abstraite"
+    ],
+    correct: 2
+  },
+  {
+    question: "Que représente 'self' en PHP ?",
+    choices: [
+      "L'instance courante",
+      "La classe courante",
+      "Le parent de la classe",
+      "Une variable statique"
+    ],
+    correct: 1
+  },
+  {
+    question: "Que représente 'parent' en PHP ?",
+    choices: [
+      "L'instance courante",
+      "La classe parente",
+      "La classe courante",
+      "Un constructeur"
+    ],
+    correct: 1
+  },
+  {
+    question: "Que représente 'this' en PHP ?",
+    choices: [
+      "La classe parente",
+      "L'objet courant",
+      "La méthode statique",
+      "Une méthode abstraite"
+    ],
+    correct: 1
+  },
+  {
+    question: "Quel est le rôle d'un constructeur ?",
+    choices: [
+      "Initialiser un objet lors de sa création",
+      "Détruire un objet",
+      "Hériter d'une classe",
+      "Définir une interface"
+    ],
+    correct: 0
+  },
+  {
+    question: "Que fait un destructeur ?",
+    choices: [
+      "Crée un nouvel objet",
+      "Détruit un objet quand il n’est plus utilisé",
+      "Appelle le constructeur",
+      "Redéfinit une méthode"
+    ],
+    correct: 1
+  },
+  {
+    question: "Quelles sont les visibilités possibles en POO ?",
+    choices: [
+      "public, private, protected",
+      "open, closed, sealed",
+      "final, static, abstract",
+      "const, var, let"
+    ],
+    correct: 0
+  },
+  {
+    question: "À quoi servent les getters ?",
+    choices: [
+      "Modifier une propriété privée",
+      "Accéder à une propriété privée de manière contrôlée",
+      "Créer un objet",
+      "Détruire un objet"
+    ],
+    correct: 1
+  },
+  {
+    question: "À quoi servent les setters ?",
+    choices: [
+      "Accéder à une propriété publique",
+      "Définir une méthode statique",
+      "Modifier une propriété privée en respectant l'encapsulation",
+      "Hériter d’une classe"
+    ],
+    correct: 2
+  },
+  {
+    question: "Qu’est-ce que l’héritage ?",
+    choices: [
+      "Créer un objet",
+      "Transmettre des propriétés et méthodes d’une classe parent à une classe enfant",
+      "Définir une interface",
+      "Une méthode statique"
+    ],
+    correct: 1
+  },
+  {
+    question: "Qu’est-ce qu’une méthode abstraite ?",
+    choices: [
+      "Une méthode sans corps définie dans une classe abstraite",
+      "Une méthode statique",
+      "Une méthode privée",
+      "Une méthode finale"
+    ],
+    correct: 0
+  },
+  {
+    question: "Comment gérer une liste d'utilisateurs en POO ?",
+    choices: [
+      "Créer une classe Utilisateur et une classe ListeUtilisateurs",
+      "Stocker tout dans une seule variable globale",
+      "Utiliser uniquement des fonctions",
+      "Créer une interface Utilisateur seule"
+    ],
+    correct: 0
+  },
+  {
+    question: "Comment gérer une liste de produits en POO ?",
+    choices: [
+      "Créer une classe Produit et une classe ListeProduits",
+      "Stocker tout dans un tableau simple",
+      "Créer un constructeur vide",
+      "Utiliser des méthodes statiques seulement"
+    ],
+    correct: 0
+  },
+  {
+    question: "Quel mot-clé pour empêcher qu'une classe soit instanciée ?",
+    choices: [
+      "static",
+      "abstract",
+      "private",
+      "final"
+    ],
+    correct: 1
+  },
+  {
+    question: "Quelle est la portée de 'protected' ?",
+    choices: [
+      "Accessible uniquement dans la classe où défini",
+      "Accessible dans la classe et ses classes héritées",
+      "Accessible partout",
+      "Accessible uniquement hors de la classe"
+    ],
+    correct: 1
+  },
+  {
+    question: "Quelle différence entre une interface et une classe abstraite ?",
+    choices: [
+      "Interface contient code, classe abstraite pas",
+      "Interface définit un contrat sans code, classe abstraite peut contenir du code",
+      "Aucune différence",
+      "Les interfaces ne peuvent pas être héritées"
+    ],
+    correct: 1
+  },
+  {
+    question: "Comment créer plusieurs objets ?",
+    choices: [
+      "Avec new ClassName()",
+      "Avec static ClassName()",
+      "Avec abstract ClassName()",
+      "Avec interface ClassName()"
+    ],
+    correct: 0
+  },
+  {
+    question: "À quoi sert 'this' ?",
+    choices: [
+      "Pour accéder aux membres de la classe parente",
+      "Pour accéder aux membres de l'objet courant",
+      "Pour accéder aux variables statiques",
+      "Pour appeler une méthode statique"
+    ],
+    correct: 1
+  },
+  {
+    question: "Pourquoi utiliser la POO ?",
+    choices: [
+      "Pour organiser et réutiliser le code efficacement",
+      "Pour écrire du code en une seule ligne",
+      "Pour éviter les fonctions",
+      "Pour faire des pages web uniquement"
+    ],
+    correct: 0
+  }
+];
+
+// Variables
+let currentIndex = 0;
+let score = 0;
+let timerInterval;
+const timePerQuestion = 10;
+
+const questionEl = document.getElementById("question");
+const choicesEl = document.getElementById("choices");
+const timerEl = document.getElementById("timer");
+const resultEl = document.getElementById("result");
+
+function startQuiz() {
+  currentIndex = 0;
+  score = 0;
+  resultEl.textContent = "";
+  showQuestion();
+}
+
+function showQuestion() {
+  clearInterval(timerInterval);
+  if (currentIndex >= quizData.length) {
+    showResult();
+    return;
+  }
+  const currentQ = quizData[currentIndex];
+  questionEl.textContent = `${currentIndex + 1}. ${currentQ.question}`;
+  choicesEl.innerHTML = "";
+  currentQ.choices.forEach((choice, i) => {
+    const div = document.createElement("div");
+    div.classList.add("choice");
+    div.textContent = choice;
+    div.dataset.index = i;
+    div.onclick = () => selectAnswer(i);
+    choicesEl.appendChild(div);
+  });
+  startTimer(timePerQuestion);
+}
+
+function startTimer(seconds) {
+  let timeLeft = seconds;
+  timerEl.textContent = `Temps restant: ${timeLeft}s`;
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    timerEl.textContent = `Temps restant: ${timeLeft}s`;
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      nextQuestion();
+    }
+  }, 1000);
+}
+
+function selectAnswer(selected) {
+  clearInterval(timerInterval);
+  const currentQ = quizData[currentIndex];
+  const choicesDivs = document.querySelectorAll(".choice");
+
+  if (selected === currentQ.correct) {
+    score++;
+    choicesDivs[selected].classList.add("correct");
+  } else {
+    choicesDivs[selected].classList.add("wrong");
+    choicesDivs[currentQ.correct].classList.add("correct");
+  }
+
+  // Disable clicks after answer
+  choicesDivs.forEach(div => div.onclick = null);
+
+  // Next question after 2 sec
+  setTimeout(nextQuestion, 2000);
+}
+
+function nextQuestion() {
+  currentIndex++;
+  showQuestion();
+}
+
+function showResult() {
+  questionEl.textContent = "";
+  choicesEl.innerHTML = "";
+  timerEl.textContent = "";
+  resultEl.textContent = `Quiz terminé ! Ton score est ${score} / ${quizData.length}`;
+}
+
+// Start quiz on page load
+startQuiz();
+</script>
+
+</body>
+</html>
