@@ -5,45 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Quiz POO - Glow Edition</title>
 <style>
-@media (max-width: 400px) {
-  body {
-    padding: 10px;
+@media (max-width: 500px) {
+  #quiz-container {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
   }
 
-  h1 {
+  #question {
     font-size: 20px;
-    text-align: center;
   }
 
-  canvas {
-    width: 180px !important;
-    height: 180px !important;
-  }
-
-  #spin {
-    font-size: 14px;
-    padding: 6px 12px;
-  }
-
-  .numbers {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-  }
-
-  .number {
-    font-size: 12px;
-    padding: 6px;
-  }
-
-  #result, #question, #answer {
+  .choice {
     font-size: 16px;
+    padding: 12px 15px;
   }
 
-  #showAnswer {
-    font-size: 13px;
-    padding: 5px 10px;
+  #timer {
+    font-size: 18px;
   }
-}
+
+  #result {
+    font-size: 24px;
+  }
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #0d0f17;
